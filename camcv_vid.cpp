@@ -1,4 +1,3 @@
-whi
 /////////////////////////////////////////////////////////////
 // Many source code lines are copied from RaspiVid.c
 // Copyright (c) 2012, Broadcom Europe Ltd
@@ -464,27 +463,19 @@ static void signal_handler(int signal_number)
 }
 
 /*
-CV_TM_CCOEFF_NORMED: Normalized Correlation Coefficient
-If the values of result are not greater than the value of threshod, it will return the point(-1,-1).
+	CV_TM_CCOEFF_NORMED: Normalized Correlation Coefficient
+	return value: maximum correlation coefficient
 */
-Point template_matching(Mat source, Mat template_image, double thresholdValue)
+double template_matching(Mat source, Mat template_image)
 {
-	if(source.type() != template_image.type())return Point(-1,-1);
-	Mat result(source.rows - template_image.rows  + 1,source.cols - template_image.cols + 1, CV_32FC1);
+	if(source.type() != template_image.type()) return 0;
+	Mat result(source.rows - template_image.rows  + 1, source.cols - template_image.cols + 1, CV_32FC1);
 	matchTemplate(source, template_image, result, CV_TM_CCOEFF_NORMED);
 
 	Point minLoc, maxLoc, matchLoc;
 	double minval, maxval;
 	minMaxLoc(result, &minval, &maxval, &minLoc, &maxLoc, Mat());
-	if(result.at<float>(maxLoc.y, maxLoc.x) > thresholdValue)
-	{
-		matchLoc=maxLoc;
-	}
-	else
-	{
-		matchLoc=Point(-1,-1);
-	}
-	return matchLoc;
+	return maxval;
 }
 
 /**
